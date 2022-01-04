@@ -1,4 +1,4 @@
-const nombreCache = "apv-1";
+const nombreCache = "apv-6";
 const archivos = [
 	"/",
 	"/index.html",
@@ -7,7 +7,6 @@ const archivos = [
 	"/css/styles.css",
 	"/js/app.js",
 	"/js/apv.js",
-	"/manifest.json",
 ];
 
 // Cuando se instala el service worker
@@ -26,20 +25,18 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
 	console.log("ServiceWorker activado");
 
-	console.log(e);
+	e.waitUntil(
+		caches.keys().then((keys) => {
+			console.log(keys);
+
+			return Promise.all(
+				keys
+					.filter((key) => key !== nombreCache)
+					.map((key) => caches.delete(key)) //Borra las versiones anteriores
+			);
+		})
+	);
 });
-
-// Evento fetch para descargar archivos estáticos
-// self.addEventListener("fetch", (e) => {
-// 	console.log("fetch...", e);
-
-// 	e.respondWith(
-// 		caches
-// 			.match(e.request)
-// 			.then((respuestaCache) => respuestaCache)
-// 			.catch(() => caches.match("/error.html"))
-// 	);
-// });
 
 self.addEventListener("fetch", (e) => {
 	console.log("Fetch", e);
